@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Speaking Passport — English Bolna Seekho</title>
+<style>
+  :root{
+    --paper:#F2EAD3;
+    --paper-dark:#E7DBB8;
+    --ink:#1C2541;
+    --teal:#1B4B43;
+    --teal-light:#2C6B5F;
+    --gold:#C99A2E;
+    --stamp:#B8433D;
+    --green-stamp:#2C6B5F;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Georgia',serif;
+    background:var(--teal);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03) 0, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0, transparent 40%);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:0;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:var(--paper);
+    position:relative;
+    box-shadow:0 0 40px rgba(0,0,0,0.4);
+    display:flex;
+    flex-direction:column;
+  }
+  /* passport cover */
+  .cover{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:var(--teal);
+    color:var(--paper);
+    text-align:center;
+    padding:32px 24px;
+    min-height:100vh;
+  }
+  .cover .emblem{
+    width:84px;height:84px;border-radius:50%;
+    border:3px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-size:38px; margin-bottom:20px;
+    background:rgba(255,255,255,0.04);
+  }
+  .cover h1{
+    font-family:'Trebuchet MS',sans-serif;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:1.5rem;
+    margin:0 0 6px;
+    color:var(--gold);
+  }
+  .cover p{ opacity:0.85; line-height:1.5; margin:0 0 28px; font-size:0.95rem;}
+  .btn{
+    font-family:'Trebuchet MS',sans-serif;
+    background:var(--gold);
+    color:var(--ink);
+    border:none;
+    padding:14px 28px;
+    border-radius:2px;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    font-size:0.85rem;
+    cursor:pointer;
+    box-shadow:0 3px 0 #8a6a1c;
+    transition:transform .08s;
+  }
+  .btn:active{ transform:translateY(2px); box-shadow:0 1px 0 #8a6a1c;}
+  .btn.ghost{
+    background:transparent;
+    border:1px solid var(--gold);
+    color:var(--gold);
+    box-shadow:none;
+  }
+  .btn.small{padding:8px 16px;font-size:0.75rem;}
+  .btn:disabled{opacity:0.35; cursor:not-allowed; box-shadow:none;}
+
+  /* header bar inside app */
+  .topbar{
+    background:var(--teal);
+    color:var(--paper);
+    padding:14px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-family:'Trebuchet MS',sans-serif;
+  }
+  .topbar .title{font-size:0.95rem; letter-spacing:1px; text-transform:uppercase;}
+  .topbar button{
+    background:none;border:none;color:var(--gold);
+    font-size:0.8rem; cursor:pointer; font-family:'Trebuchet MS',sans-serif;
+  }
+
+  .pages{ flex:1; padding:20px; padding-bottom:110px; }
+
+  /* level map */
+  .level-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:#fff;
+    border:1px solid var(--paper-dark);
+    border-radius:6px;
+    padding:14px;
+    margin-bottom:14px;
+    position:relative;
+  }
+  .level-row.locked{ opacity:0.55; }
+  .level-stamp{
+    width:50px;height:50px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.4rem;
+    border:2px dashed var(--paper-dark);
+    flex-shrink:0;
+  }
+  .level-stamp.done{
+    border:2px solid var(--green-stamp);
+    color:var(--green-stamp);
+    transform:rotate(-8deg);
+  }
+  .level-info{flex:1;}
+  .level-info h3{margin:0 0 3px; font-size:1.02rem;}
+  .level-info p{margin:0; font-size:0.78rem; opacity:0.7;}
+  .level-info .stars{color:var(--gold); font-size:0.85rem; margin-top:4px;}
+
+  /* card / lesson view */
+  .progress-track{
+    height:6px; background:var(--paper-dark); border-radius:4px; overflow:hidden; margin-bottom:18px;
+  }
+  .progress-fill{height:100%; background:var(--green-stamp); transition:width .3s;}
+
+  .card{
+    background:#fff;
+    border:1px solid var(--paper-dark);
+    border-radius:8px;
+    padding:24px 20px;
+    text-align:center;
+    margin-bottom:16px;
+  }
+  .card .tag{
+    font-family:'Trebuchet MS',sans-serif;
+    font-size:0.68rem; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--teal-light); margin-bottom:10px;
+  }
+  .card .en{ font-size:1.6rem; font-weight:bold; color:var(--ink); margin-bottom:6px;}
+  .card .hi{ font-size:1rem; color:var(--stamp); margin-bottom:14px;}
+  .card .example{
+    font-size:0.9rem; font-style:italic; color:#555;
+    border-top:1px dashed var(--paper-dark); padding-top:12px; margin-top:6px;
+  }
+  .card-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;}
+  .btn.teal{ background:var(--teal); color:var(--paper); box-shadow:0 3px 0 #0f2f2a;}
+  .btn.outline{ background:#fff; color:var(--teal); border:1px solid var(--teal); box-shadow:none;}
+  .mic-status{ font-size:0.78rem; margin-top:10px; min-height:18px; color:var(--teal-light); }
+  .mic-status.err{ color:var(--stamp); }
+  .mic-status.ok{ color:var(--green-stamp); font-weight:bold; }
+
+  .nav-row{ display:flex; justify-content:space-between; margin-top:6px; }
+
+  /* quiz */
+  .quiz-q{ font-size:1.1rem; font-weight:bold; margin-bottom:16px; }
+  .option{
+    display:block; width:100%; text-align:left;
+    background:#fff; border:1px solid var(--paper-dark); border-radius:6px;
+    padding:12px 14px; margin-bottom:10px; font-size:0.95rem; cursor:pointer;
+    font-family:'Georgia',serif; color:var(--ink);
+  }
+  .option.correct{ border-color:var(--green-stamp); background:#e9f5f0; }
+  .option.wrong{ border-color:var(--stamp); background:#fbeceb; }
+  .option:disabled{ cursor:default; }
+
+  .result-stamp{
+    text-align:center; padding:30px 10px;
+  }
+  .result-stamp .big{ font-size:3rem; margin-bottom:10px;}
+  .result-stamp h2{ margin:0 0 4px; color:var(--teal);}
+  .result-stamp p{ margin:0 0 20px; opacity:0.75; font-size:0.9rem;}
+
+  .hidden{display:none !important;}
+
+  footer.note{
+    text-align:center; font-size:0.7rem; opacity:0.5; padding:10px 20px 24px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- COVER -->
+  <div class="cover" id="coverScreen">
+    <div class="emblem">🗣️</div>
+    <h1>Speaking Passport</h1>
+    <p>Basic se Advanced tak English bolna seekho.<br>Har level pass karo, stamp kamao, agla level unlock karo.</p>
+    <button class="btn" onclick="goTo('map')">Passport Kholo</button>
+  </div>
+
+  <!-- LEVEL MAP -->
+  <div class="hidden" id="mapScreen">
+    <div class="topbar">
+      <div class="title">Your Passport</div>
+      <button onclick="goTo('cover')">⌂ Home</button>
+    </div>
+    <div class="pages" id="mapPages"></div>
+  </div>
+
+  <!-- LESSON -->
+  <div class="hidden" id="lessonScreen">
+    <div class="topbar">
+      <div class="title" id="lessonTitle">Level</div>
+      <button onclick="goTo('map')">✕ Exit</button>
+    </div>
+    <div class="pages">
+      <div class="progress-track"><div class="progress-fill" id="lessonProgress" style="width:0%"></div></div>
+      <div class="card" id="lessonCard"></div>
+      <div class="nav-row">
+        <button class="btn ghost small" id="prevBtn" onclick="prevCard()">← Peeche</button>
+        <button class="btn teal small" id="nextBtn" onclick="nextCard()">Aage →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="hidden" id="quizScreen">
+    <div class="topbar">
+      <div class="title" id="quizTitle">Quiz Time</div>
+      <button onclick="goTo('map')">✕ Exit</button>
+    </div>
+    <div class="pages">
+      <div class="progress-track"><div class="progress-fill" id="quizProgress" style="width:0%"></div></div>
+      <div id="quizBody"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="hidden" id="resultScreen">
+    <div class="topbar">
+      <div class="title">Result</div>
+      <button onclick="goTo('map')">✕ Close</button>
+    </div>
+    <div class="pages">
+      <div class="result-stamp" id="resultBody"></div>
+    </div>
+  </div>
+
+  <footer class="note">Pronunciation feature needs Chrome + mic permission. No internet data is stored — progress resets on reload.</footer>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const LEVELS = [
+  {
+    id:0, name:"Basic", hindi:"Shuruaat", icon:"🌱", pass:70,
+    cards:[
+      {en:"Hello, how are you?", hi:"Namaste, aap kaise hain?", ex:"Hello, how are you? — I am fine, thank you."},
+      {en:"My name is Tosif.", hi:"Mera naam Tosif hai.", ex:"Hi, my name is Tosif. What is your name?"},
+      {en:"Thank you very much.", hi:"Bahut dhanyawad.", ex:"Thank you very much for your help."},
+      {en:"I am sorry.", hi:"Mujhe maaf kijiye.", ex:"I am sorry, I am late today."},
+      {en:"Please help me.", hi:"Kripya meri madad kijiye.", ex:"Excuse me, please help me with this."},
+      {en:"I don't understand.", hi:"Mujhe samajh nahi aaya.", ex:"Sorry, I don't understand. Can you repeat?"},
+      {en:"Can I have some water?", hi:"Kya mujhe thoda paani mil sakta hai?", ex:"Excuse me, can I have some water, please?"},
+      {en:"See you tomorrow.", hi:"Kal milte hain.", ex:"Okay, see you tomorrow at the shop."}
+    ],
+    quiz:[
+      {q:"'Namaste, aap kaise hain?' ka English kya hai?", opts:["Hello, how are you?","Thank you very much","See you tomorrow","I am sorry"], correct:0},
+      {q:"'Mujhe samajh nahi aaya' ko English mein kaise kahenge?", opts:["My name is...","I don't understand.","Please help me.","Can I have water?"], correct:1},
+      {q:"'Please help me' ka Hindi meaning?", opts:["Dhanyawad","Maaf kijiye","Kripya meri madad kijiye","Kal milte hain"], correct:2},
+      {q:"Kisi ko dhanyawaad dene ke liye kya bolenge?", opts:["Sorry","Thank you very much","Hello","Goodbye"], correct:1},
+      {q:"'I am sorry' ka sahi Hindi arth?", opts:["Mujhe maaf kijiye","Mera naam hai","Kal milte hain","Paani dijiye"], correct:0}
+    ]
+  },
+  {
+    id:1, name:"Intermediate", hindi:"Roz ki Baatcheet", icon:"💬", pass:70,
+    cards:[
+      {en:"Where is the nearest bus stop?", hi:"Sabse najdeeki bus stop kahan hai?", ex:"Excuse me, where is the nearest bus stop?"},
+      {en:"How much does this cost?", hi:"Ye kitne ka hai?", ex:"How much does this shirt cost?"},
+      {en:"I would like to order a coffee.", hi:"Mujhe ek coffee order karni hai.", ex:"I would like to order a coffee, please."},
+      {en:"Could you speak a little slower?", hi:"Kya aap thoda dheere bol sakte hain?", ex:"Sorry, could you speak a little slower?"},
+      {en:"I have been working here for two years.", hi:"Main yahan do saal se kaam kar raha hoon.", ex:"I have been working here for two years now."},
+      {en:"What do you do for a living?", hi:"Aap kya kaam karte hain?", ex:"Nice to meet you — what do you do for a living?"},
+      {en:"Let's meet at 5 in the evening.", hi:"Shaam ko 5 baje milte hain.", ex:"Let's meet at 5 in the evening near the station."},
+      {en:"I'm looking forward to it.", hi:"Mujhe iska besabri se intezaar hai.", ex:"Great news! I'm looking forward to it."}
+    ],
+    quiz:[
+      {q:"'Ye kitne ka hai?' English mein?", opts:["Where is the bus stop?","How much does this cost?","I would like a coffee.","What do you do?"], correct:1},
+      {q:"'I have been working here for two years' — kaunsa tense hai?", opts:["Present Perfect Continuous","Simple Past","Future Tense","Simple Present"], correct:0},
+      {q:"'Kya aap thoda dheere bol sakte hain?' English mein?", opts:["Let's meet at 5.","Could you speak a little slower?","I'm looking forward to it.","What do you do?"], correct:1},
+      {q:"Kisi se profession poochne ke liye kya bolenge?", opts:["What do you do for a living?","How much does this cost?","See you tomorrow.","I am sorry."], correct:0},
+      {q:"'Mujhe iska besabri se intezaar hai' ka English?", opts:["I don't understand.","I'm looking forward to it.","Please help me.","Thank you very much."], correct:1}
+    ]
+  },
+  {
+    id:2, name:"Advanced", hindi:"Fluency aur Idioms", icon:"🏆", pass:70,
+    cards:[
+      {en:"It's raining cats and dogs.", hi:"Bahut zor ki baarish ho rahi hai.", ex:"We can't go out, it's raining cats and dogs."},
+      {en:"I'm on the fence about this decision.", hi:"Main is faisale ko lekar confused hoon.", ex:"Honestly, I'm on the fence about this decision."},
+      {en:"Let's not beat around the bush.", hi:"Aao seedhi baat karte hain.", ex:"Let's not beat around the bush — tell me the real reason."},
+      {en:"That project was a piece of cake.", hi:"Wo project bahut aasan tha.", ex:"Compared to last time, that project was a piece of cake."},
+      {en:"I need to touch base with the client.", hi:"Mujhe client se baat karni hai (update lena hai).", ex:"I'll touch base with the client before the meeting."},
+      {en:"In my opinion, this approach makes more sense.", hi:"Mere hisaab se, ye approach zyada sahi hai.", ex:"In my opinion, this approach makes more sense long-term."},
+      {en:"Could you elaborate on that point?", hi:"Kya aap us baat ko vistaar se samjha sakte hain?", ex:"That's interesting — could you elaborate on that point?"},
+      {en:"I couldn't agree more.", hi:"Main poori tarah sehmat hoon.", ex:"That's a great idea, I couldn't agree more."}
+    ],
+    quiz:[
+      {q:"'It's raining cats and dogs' ka matlab?", opts:["Halki baarish","Bahut zor ki baarish","Dhoop hai","Thand hai"], correct:1},
+      {q:"'Let's not beat around the bush' ka matlab?", opts:["Idhar udhar ki baat karo","Seedhi baat karo","Chup raho","Jaldi karo"], correct:1},
+      {q:"Poori tarah sehmati (full agreement) dikhane ke liye?", opts:["I'm on the fence.","I couldn't agree more.","Could you elaborate?","Touch base."], correct:1},
+      {q:"'A piece of cake' idiom ka matlab?", opts:["Bahut mushkil kaam","Bahut aasan kaam","Meetha khana","Party karna"], correct:1},
+      {q:"Kisi vishay par aur jaankari maangne ke liye?", opts:["Could you elaborate on that point?","It's a piece of cake.","I'm on the fence.","Touch base."], correct:0}
+    ]
+  }
+];
+
+/* ---------------- STATE (in-memory only) ---------------- */
+let state = {
+  progress: LEVELS.map(()=>({unlocked:false, stars:0, done:false})),
+  currentLevel:0,
+  cardIndex:0,
+  quizIndex:0,
+  quizScore:0,
+  quizAnswered:false
+};
+state.progress[0].unlocked = true;
+
+/* ---------------- NAV ---------------- */
+function goTo(screen){
+  ['coverScreen','mapScreen','lessonScreen','quizScreen','resultScreen'].forEach(id=>{
+    document.getElementById(id).classList.add('hidden');
+  });
+  document.getElementById(screen+'Screen').classList.remove('hidden');
+  if(screen==='map') renderMap();
+}
+
+function renderMap(){
+  const wrap = document.getElementById('mapPages');
+  wrap.innerHTML = '';
+  LEVELS.forEach((lvl,i)=>{
+    const p = state.progress[i];
+    const row = document.createElement('div');
+    row.className = 'level-row' + (p.unlocked ? '' : ' locked');
+    row.innerHTML = `
+      <div class="level-stamp ${p.done?'done':''}">${p.done ? '✔' : lvl.icon}</div>
+      <div class="level-info">
+        <h3>${lvl.name} <span style="font-weight:normal;font-size:0.75rem;opacity:0.6">(${lvl.hindi})</span></h3>
+        <p>${lvl.cards.length} phrases • ${lvl.quiz.length} quiz questions</p>
+        ${p.done ? `<div class="stars">${'★'.repeat(p.stars)}${'☆'.repeat(3-p.stars)}</div>` : ''}
+      </div>
+      <button class="btn small ${p.unlocked?'teal':''}" ${p.unlocked?'':'disabled'} onclick="startLevel(${i})">${p.done? 'Dobara' : 'Shuru'}</button>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------------- LESSON ---------------- */
+function startLevel(i){
+  state.currentLevel = i;
+  state.cardIndex = 0;
+  document.getElementById('lessonTitle').textContent = LEVELS[i].name + ' — ' + LEVELS[i].hindi;
+  goTo('lesson');
+  renderCard();
+}
+
+function renderCard(){
+  const lvl = LEVELS[state.currentLevel];
+  const c = lvl.cards[state.cardIndex];
+  document.getElementById('lessonProgress').style.width = Math.round(((state.cardIndex+1)/lvl.cards.length)*100)+'%';
+  const card = document.getElementById('lessonCard');
+  card.innerHTML = `
+    <div class="tag">Phrase ${state.cardIndex+1} / ${lvl.cards.length}</div>
+    <div class="en">${c.en}</div>
+    <div class="hi">${c.hi}</div>
+    <div class="example">${c.ex}</div>
+    <div class="card-actions">
+      <button class="btn outline small" onclick="speakText('${c.en.replace(/'/g,"\\'")}')">🔊 Suno</button>
+      <button class="btn teal small" onclick="startMicCheck('${c.en.replace(/'/g,"\\'")}')">🎤 Bolo</button>
+    </div>
+    <div class="mic-status" id="micStatus"></div>
+  `;
+  document.getElementById('prevBtn').disabled = state.cardIndex===0;
+  const lastCard = state.cardIndex === lvl.cards.length-1;
+  document.getElementById('nextBtn').textContent = lastCard ? 'Quiz Do →' : 'Aage →';
+}
+
+function prevCard(){ if(state.cardIndex>0){ state.cardIndex--; renderCard(); } }
+function nextCard(){
+  const lvl = LEVELS[state.currentLevel];
+  if(state.cardIndex < lvl.cards.length-1){ state.cardIndex++; renderCard(); }
+  else { startQuiz(); }
+}
+
+/* ---------------- SPEECH ---------------- */
+function speakText(text){
+  if(!('speechSynthesis' in window)){
+    alert('Is browser mein voice support nahi hai.');
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.9;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function startMicCheck(target){
+  const statusEl = document.getElementById('micStatus');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    statusEl.textContent = 'Is browser/app mein mic recognition support nahi hai. Chrome try karein.';
+    statusEl.className = 'mic-status err';
+    return;
+  }
+  statusEl.textContent = '🎙️ Sun rahe hain... bolo';
+  statusEl.className = 'mic-status';
+  const rec = new SR();
+  rec.lang = 'en-US';
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  rec.onresult = (e)=>{
+    const said = e.results[0][0].transcript.trim();
+    const norm = s => s.toLowerCase().replace(/[^a-z\s]/g,'').trim();
+    if(norm(said) === norm(target)){
+      statusEl.textContent = `✔ Bahut badhiya! Aapne kaha: "${said}"`;
+      statusEl.className = 'mic-status ok';
+    } else {
+      statusEl.textContent = `Aapne kaha: "${said}" — dobara try karo.`;
+      statusEl.className = 'mic-status err';
+    }
+  };
+  rec.onerror = (e)=>{
+    statusEl.textContent = 'Mic access nahi mila ya error aaya. Permission check karein.';
+    statusEl.className = 'mic-status err';
+  };
+  try{ rec.start(); }catch(err){
+    statusEl.textContent = 'Mic start nahi ho paya.';
+    statusEl.className = 'mic-status err';
+  }
+}
+
+/* ---------------- QUIZ ---------------- */
+function startQuiz(){
+  state.quizIndex = 0;
+  state.quizScore = 0;
+  document.getElementById('quizTitle').textContent = LEVELS[state.currentLevel].name + ' Quiz';
+  goTo('quiz');
+  renderQuiz();
+}
+
+function renderQuiz(){
+  const lvl = LEVELS[state.currentLevel];
+  const q = lvl.quiz[state.quizIndex];
+  document.getElementById('quizProgress').style.width = Math.round((state.quizIndex/lvl.quiz.length)*100)+'%';
+  state.quizAnswered = false;
+  const body = document.getElementById('quizBody');
+  body.innerHTML = `
+    <div class="quiz-q">Q${state.quizIndex+1}. ${q.q}</div>
+    <div id="optWrap"></div>
+  `;
+  const optWrap = document.getElementById('optWrap');
+  q.opts.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.textContent = opt;
+    b.onclick = ()=>answerQuiz(idx);
+    optWrap.appendChild(b);
+  });
+}
+
+function answerQuiz(idx){
+  if(state.quizAnswered) return;
+  state.quizAnswered = true;
+  const lvl = LEVELS[state.currentLevel];
+  const q = lvl.quiz[state.quizIndex];
+  const opts = document.querySelectorAll('#optWrap .option');
+  opts.forEach((el,i)=>{
+    el.disabled = true;
+    if(i===q.correct) el.classList.add('correct');
+    else if(i===idx) el.classList.add('wrong');
+  });
+  if(idx===q.correct) state.quizScore++;
+  setTimeout(()=>{
+    if(state.quizIndex < lvl.quiz.length-1){
+      state.quizIndex++;
+      renderQuiz();
+    } else {
+      finishQuiz();
+    }
+  }, 1100);
+}
+
+function finishQuiz(){
+  const lvl = LEVELS[state.currentLevel];
+  const pct = Math.round((state.quizScore/lvl.quiz.length)*100);
+  const passed = pct >= lvl.pass;
+  const stars = pct>=90?3 : pct>=70?2 : pct>=50?1 : 0;
+  state.progress[state.currentLevel].done = true;
+  state.progress[state.currentLevel].stars = Math.max(stars, state.progress[state.currentLevel].stars);
+  if(passed && state.currentLevel+1 < LEVELS.length){
+    state.progress[state.currentLevel+1].unlocked = true;
+  }
+  goTo('result');
+  const body = document.getElementById('resultBody');
+  body.innerHTML = `
+    <div class="big">${passed ? '🏅' : '📖'}</div>
+    <h2>${passed ? 'Level Pass! Stamp mil gaya' : 'Thoda aur practice karo'}</h2>
+    <p>Score: ${state.quizScore}/${lvl.quiz.length} (${pct}%)</p>
+    <div style="margin-bottom:20px; color:var(--gold); font-size:1.3rem;">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+    <button class="btn teal" onclick="goTo('map')">Passport Dekho</button>
+    ${!passed ? `<div style="margin-top:10px;"><button class="btn ghost small" onclick="startLevel(${state.currentLevel})">Level Dobara Try Karo</button></div>` : ''}
+  `;
+}
+</script>
+</body>
+</html>
